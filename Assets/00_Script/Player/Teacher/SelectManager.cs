@@ -18,6 +18,8 @@ public class SelectManager : MonoBehaviour
 	[SerializeField] private TeacherAnim_Controller teacherAnimController; //アニメーション管理用のスクリプト
 	[SerializeField] private FrontCameraMove FrontCameraMove; //カメラを回転する用のスクリプト
 
+	private PlayMischief playMischief;
+
 	public static int currentTargetRows; // 選択中の目標（行）
 	public static int currentTargetClos; // 選択中の目標（列）
 	public static bool[,] studentInAction; // 学生を摘発されて特殊行動に入る
@@ -39,14 +41,14 @@ public class SelectManager : MonoBehaviour
 	private bool specialActionChange;  //特殊タイム行動対応
 	private int specialActionTimes;    //特殊行動できる回数
 	private float specialInActionTime; //一回特殊行動に入る時間
-	private float srudentPosYUp = 0.3f; 
+
 	private float selectSuccessTime; //文字を表示する時間
 	private bool isSelectSuccess;    //文字表示用
 
 	public AudioSource[] teacherSelectSound;//摘発する音
 
 	private bool isTeachingCamera; //授業中をチェックする
-	private float studentPosY;
+	private bool isDollyCheck;      //ドリーカートのチェックを始めるか確認する	
 
 
 	void Start()
@@ -68,6 +70,8 @@ public class SelectManager : MonoBehaviour
 		canSpecialTimesUp = new bool[3] { false, false, false };
 		specialInActionTime = 10.0f;
 		specialTimeText.text = "";
+		teacherAnimController = this.GetComponent<TeacherAnim_Controller>();
+		isDollyCheck = false;
 
 
 		//生徒オブジェクトのActionのフラグをfalseに初期化する
@@ -98,7 +102,6 @@ public class SelectManager : MonoBehaviour
 
 		//選択するオブジェクトを生成する
 		targetIndicationSpawn();
-		studentPosY = studentObjects[currentTargetRows, currentTargetClos].transform.position.y;
 	}
 
 	void Update()
@@ -107,6 +110,12 @@ public class SelectManager : MonoBehaviour
 		// Debug.Log("isInputEnabled：" + $"{isInputEnabled}");
 		StopDeltaTime(inputStopTime);
 		SelectSuccess();
+		//ここにドリーカート呼ぶ関数をさす
+		if(isDollyCheck)
+		{
+			playMischief = studentObjects[currentTargetRows, currentTargetClos].GetComponent<PlayMischief>();
+			playMischief.isDollyCartSetPath();
+		}
 		//授業中をチェックする
 		isTeachingCamera = FrontCameraMove.SendTeacherToward();
 	}
@@ -305,19 +314,19 @@ public class SelectManager : MonoBehaviour
 		Debug.Log("選択する処理");
 		Debug.Log("スペシャルタイムじゃない");
 
-
 		//選択したものがNPCなら停止処理を送る
 		if (studentObjects[currentTargetRows, currentTargetClos].tag == "Student_NPC")
 		{
 			//間違えたというFlagを立てる処理
 			DisableMoveFlagCheck();
+			//アニメーションを呼び出す
+			teacherAnimController.AnimHit(isSelectSuccess);
 			return;
 		}
 
-
 		// 通常タイムであるか、特殊タイムで黒板や生徒がいない場合、選択中の目標をログに表示
 		Debug.Log("現在の選択オブジェクト：" + studentObjects[currentTargetRows, currentTargetClos].name);
-		PlayMischief playMischief = studentObjects[currentTargetRows, currentTargetClos].GetComponent<PlayMischief>();
+		playMischief = studentObjects[currentTargetRows, currentTargetClos].GetComponent<PlayMischief>();
 		//もし生徒がいたずらQTE中だったら
 		if (playMischief.ExposedMischief() == true)
 		{
@@ -340,12 +349,15 @@ public class SelectManager : MonoBehaviour
 			//間違えたというFlagを立てる処理
 			DisableMoveFlagCheck();
 		}
-
+		isDollyCheck = true;
+		//アニメーションを呼び出す
+		teacherAnimController.AnimHit(isSelectSuccess);
 	}
-	/// <summary>
-	/// specialTime中の選択中の目標の行動
-	/// </summary>
-	private void SpecialTimeObjectSelect()
+
+		/// <summary>
+		/// specialTime中の選択中の目標の行動
+		/// </summary>
+		private void SpecialTimeObjectSelect()
 	{
 		Debug.Log("選択する処理");
 		Debug.Log("SpecialTime中だぞ");
@@ -359,6 +371,7 @@ public class SelectManager : MonoBehaviour
 			studentInAction[currentTargetRows, j] = true;
 
 			//後で立つアニメーションの処理を追加
+			studentObjects[currentTargetRows, j].GetComponent<StudentAnimContoroller>().AnimStartReadAloud();
 
 		}
 
@@ -367,7 +380,7 @@ public class SelectManager : MonoBehaviour
 			if (studentObjects[currentTargetRows, i].tag == "Student")
 			{
 				Debug.Log("特殊処理中に以下の処理を通す");
-				PlayMischief playMischief = studentObjects[currentTargetRows, i].GetComponent<PlayMischief>();
+				playMischief = studentObjects[currentTargetRows, i].GetComponent<PlayMischief>();
 				//摘発の処理が入るように作っておいてね♡
 				if (playMischief.ExposedMischief() == true)
 				{
@@ -511,9 +524,6 @@ public class SelectManager : MonoBehaviour
 		int nowRow = currentTargetRows;
 		int nowCol = currentTargetClos;
 
-		Vector3 studentPos = studentObjects[currentTargetRows, currentTargetClos].transform.position; //今の生徒の座標を更新
-		studentObjects[currentTargetRows, currentTargetClos].transform.position = new Vector3(studentPos.x, studentPosY, studentPos.z);
-
 		// 行と列を変更します
 		nowCol += changeX;
 		nowRow += changeY;
@@ -542,12 +552,9 @@ public class SelectManager : MonoBehaviour
 	{
 		if (studentObjects[currentTargetRows, currentTargetClos] != null)
 		{
-			
 			Vector3 studentPos = studentObjects[currentTargetRows, currentTargetClos].transform.position; //今の生徒の座標を更新
 			normalTargetYPos = studentPos.y;//ターゲット座標Yを更新
 			targetIndication.transform.position = new Vector3(studentPos.x, normalTargetYPos + targetHeight, studentPos.z);//ターゲット座標更新
-
-			studentObjects[currentTargetRows, currentTargetClos].transform.position = new Vector3(studentPos.x, studentPos.y + srudentPosYUp, studentPos.z);
 		}
 	}
 
@@ -664,8 +671,6 @@ public class SelectManager : MonoBehaviour
 				selectSuccess.text = "";
 				isSelectSuccess = false;
 			}
-			//アニメーションを呼び出す
-			this.GetComponent<TeacherAnim_Controller>().AnimHit(isSelectSuccess);
 		}
 
 	}

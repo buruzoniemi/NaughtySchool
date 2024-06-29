@@ -1116,6 +1116,7 @@ GameObject:
   - component: {fileID: -2724882370209957149}
   - component: {fileID: 3153156753101918996}
   - component: {fileID: 6156617865644239285}
+  - component: {fileID: 2937936791452823340}
   m_Layer: 0
   m_Name: GirlPlayer
   m_TagString: Student
@@ -1230,7 +1231,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1cff25de6f51bd4c98f28b098621d44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 5110703058231360822}
 --- !u!114 &3153156753101918996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1478,6 +1478,27 @@ MonoBehaviour:
   m_PositionUnits: 2
   m_Speed: 0
   m_Position: 0
+--- !u!114 &2937936791452823340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2591975733520661281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad8542e4d415bb640bd9cce496e7f77e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPrefab:
+  - {fileID: 3544932701987996889, guid: bfa8881dd91c80144a1b7b227eb0dfab, type: 3}
+  - {fileID: 2007377255512980751, guid: c2b4dedeb653d7143827f85e7ec6b98c, type: 3}
+  - {fileID: 7472870923366002535, guid: 7c747f140a054a44fbc0ae3c2c087c5a, type: 3}
+  - {fileID: 3037941117111643336, guid: 069af6ed8199db94081225d3ad7628b9, type: 3}
+  - {fileID: 5996594021334208385, guid: 3ee53836b16c560448bd573aa0cd4d99, type: 3}
+  - {fileID: 8562772566580692589, guid: 8851b8ec1742cd1498c4119ac955d06e, type: 3}
+  - {fileID: 8430944293489471297, guid: 7971d905139c5b74686cdd9a96961334, type: 3}
+  - {fileID: 1985693072036305986, guid: 6033e7f039bbcd04f956330ecae64a73, type: 3}
 --- !u!1 &2601771463569397912
 GameObject:
   m_ObjectHideFlags: 0
@@ -3990,12 +4011,7 @@ Animator:
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed
-    by Humanoid clips.\n\tTransform 'Spine1'\n\tTransform 'R_Shuoulder'\n\tTransform
-    'Neck'\n\tTransform 'L_Hand'\n\tTransform 'Head'\n\tTransform 'L_ForeArm'\n\tTransform
-    'L_Shuoulder'\n\tTransform 'R_Hand'\n\tTransform 'L_Hand'\n\tTransform 'Root'\n\tand
-    more ...\n\tFrom animation clip 'game'"
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -4423,10 +4439,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 691279066175699489, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e9d584e2a0c1d484ca11b51804c6b38b, type: 3}
     - target: {fileID: 854446558698119705, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1595204296945336564, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f4b958aee07ccc149b0187e09a662c13, type: 3}
     - target: {fileID: 1818464833655884714, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -4515,6 +4539,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4101176200168994911, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c42df974bcc2608478f81d9c32dbfa24, type: 3}
     - target: {fileID: 4245047601230449752, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}
       propertyPath: m_OverrideSorting
       value: 1
@@ -4531,6 +4559,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6839531278682481455, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4ded119fb10734a47a1e927ea10c6179, type: 3}
     m_RemovedComponents:
     - {fileID: 1042143314723316590, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b064d616d71b0d54fa52f6fdbda4b541, type: 3}

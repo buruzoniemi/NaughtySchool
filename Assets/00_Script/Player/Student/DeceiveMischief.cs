@@ -101,7 +101,6 @@ public class DeceiveMischief : MonoBehaviour
     /// </summary>
     public void OnCompDeceive()
     {
-		this.GetComponent<StudentAnimContoroller>().AnimDeceive();
 		// QTEを無効化(コールバック)
 		compDeceiveCallBack();
         Debug.Log("ごまかし完了");    

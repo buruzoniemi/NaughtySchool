@@ -6,7 +6,7 @@ public class NPCAnimation : MonoBehaviour
 {
 
     private Animator animator;                                  //アニメータ管理用
-    private string StudyTrigger = "Study", moving = "move";     //パラメータ名
+    private string StudyTrigger = "Study", moving = "move",ReadAloud = "ReaadAloud";     //パラメータ名
     private bool doRandom,doAnimation;                          //ランダムを行うか、アニメーションを行うか
     private float randomIndex;                                  //ランダムの値
     private int moveIndex;                                      //行動番号
@@ -64,4 +64,23 @@ public class NPCAnimation : MonoBehaviour
         }
 
     }
+	public void AnimNPCReadAloudStart()
+	{
+		Debug.Log("NPCの音読処理開始");
+		//パラメータの現在の状態をとる
+		bool flag = animator.GetBool(ReadAloud);
+		//すでに音読しているときは返す
+		if (flag) return;
+		//音読をオンにする
+		animator.SetBool(ReadAloud, true);
+	}
+	public void AnimNPCReadAloudEnd()
+	{
+		//パラメータの現在の状態をとる
+		bool flag = animator.GetBool(ReadAloud);
+		//音読をしていないときは返す
+		if (!flag) return;
+		//音読をオンにする
+		animator.SetBool(ReadAloud, false);
+	}
 }

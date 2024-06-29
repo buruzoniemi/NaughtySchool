@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: ad8542e4d415bb640bd9cce496e7f77e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - bookPrefab: {instanceID: 0}
+  - lunchboxPrefab: {instanceID: 0}
+  - dominoPrefab: {instanceID: 0}
+  - origamiPrefab: {instanceID: 0}
+  - gamePrefab: {instanceID: 0}
+  - airplanePrefab: {instanceID: 0}
+  - snackfoodPrefub: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

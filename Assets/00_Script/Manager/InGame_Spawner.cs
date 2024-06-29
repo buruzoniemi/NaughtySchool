@@ -189,15 +189,18 @@ public class InGame_Spawner : MonoBehaviour
         //削除したオブジェクトにnullを代入する
         studentObjArray[Rows, Cols] = student;
         selectManager.studentObjects[Rows, Cols] = student;
-        //転送したObjectを元の位置に送る
-        student.transform.position = Pos;
+		
+		//転送したObjectを元の位置に送る
+		student.transform.position = Pos;
         student.transform.rotation = Rotate;
         Debug.Log($"{studentObjArray[Rows, Cols].transform.position}");
         Debug.Log($"{studentObjArray[Rows, Cols].transform.localRotation.y}");
         Debug.Log($"{studentObjArray[Rows, Cols]}");
-    }
+		studentObjArray[Rows, Cols].gameObject.GetComponent<ItemAnimation>().ItemInstantiate();
+		//Debug.Log("ここ通ってるよ");
+	}
 
-    public GameObject SendStudentArray(int Rows, int Cols)
+	public GameObject SendStudentArray(int Rows, int Cols)
     {
         return studentObjArray[Rows, Cols];
     }

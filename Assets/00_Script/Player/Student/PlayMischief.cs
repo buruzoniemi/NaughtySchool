@@ -41,6 +41,7 @@ public class PlayMischief : MonoBehaviour
     private bool isQTEActive;                                       // StudentMischiefから受け取る
     private bool canInput;                                          // 入力できるか
 	private bool isLookup;
+	private bool isCallExposed;										//指摘の処理が呼び出されたか
 
     public delegate void DisableQTE(Mischief mischief);
     public delegate void ExposedQTE(Mischief mischief);
@@ -49,6 +50,8 @@ public class PlayMischief : MonoBehaviour
 
 	public Text gameOverText; //ゲームオーバーの時表示する文字
 
+	private StudentAnimContoroller studentAnim;　//生徒アニメーションパラメータをコントロールをスクリプト
+	private Animator animator;		//生徒のアニメータを格納
     // Start is called before the first frame update
     void Start()
     {
@@ -57,8 +60,10 @@ public class PlayMischief : MonoBehaviour
         canInput = false;
         isQTEActive = false;
 		isLookup = false;
+		isCallExposed = false;
 		gameOverText.text = "";
-
+		studentAnim = this.GetComponent<StudentAnimContoroller>();
+		animator = this.GetComponentInChildren<Animator>();
 	}
 
     // フレーム毎の更新処理
@@ -121,8 +126,7 @@ public class PlayMischief : MonoBehaviour
         ChangeCommandOperation();
 
 		//アニメーションを呼び出す
-		this.GetComponent<StudentAnimContoroller>().AnimNaughtyNum(inProgressCommand.name);
-		this.GetComponent<StudentAnimContoroller>().AnimDoNaughty();
+		studentAnim.AnimNaughtyNum(inProgressCommand.name);
     }
 
     // QTE中かチェック
@@ -149,9 +153,11 @@ public class PlayMischief : MonoBehaviour
         operation.DisableCanvas();
         judge.DisableCanvas();
         gauge.DisableCanvas();
-        //neck.DisableRotation();
-        // コールバック返す
-        disableQTECallBack(inProgressCommand);
+		//neck.DisableRotation();
+		studentAnim.AnimEndNaughty();
+
+		// コールバック返す
+		disableQTECallBack(inProgressCommand);
     }
 
     // 入力チェック
@@ -193,7 +199,8 @@ public class PlayMischief : MonoBehaviour
                 //QTEが完了処理
                 OnCompQTE();
 				//アニメーションを呼び出す
-				this.GetComponent<StudentAnimContoroller>().AnimEndNaughty();
+				
+				Debug.Log("QTEComp");
             }
             else
             {
@@ -322,7 +329,7 @@ public class PlayMischief : MonoBehaviour
         if (!isQTEActive) return false;
         deceiveMischief.enableDeceive = false;
 
-		this.GetComponent<StudentAnimContoroller>().AnimPickUp();
+		studentAnim.AnimPickUp();
 
 		// フラグを切る
 		isQTEActive = false;
@@ -335,8 +342,8 @@ public class PlayMischief : MonoBehaviour
         operation.DisableCanvas();
         judge.DisableCanvas();
         gauge.DisableCanvas();
-        // Exit ClassRoom
-        dollyCart.SetPath();
+		//指摘呼び出したかのフラグをオンにする
+		isCallExposed = true;
 
         // コールバック返す
         exposedQTECallBack(inProgressCommand);
@@ -346,11 +353,29 @@ public class PlayMischief : MonoBehaviour
 
 		return true;
     }
+	/// <summary>
+	/// ドリーカートのパスをセットする関数
+	/// </summary>
+	public void isDollyCartSetPath()
+	{
+		//Debug.Log("isDollyCartSetPathは呼び出された");
+		//摘発処理が呼ばれたか
+		if (!isCallExposed) return;
+		//Debug.Log("isCallExposedはtrueだった");
+		//現在のアニメーションステートが歩き出しのとき
+		if (animator.GetCurrentAnimatorStateInfo(0).IsName("walkstart"))
+		{
+			//Exit ClassRoom
+			dollyCart.SetPath();
+			isCallExposed = false;
+		}
+	}
 
-    /// <summary>
-    /// デバイス名を記録
-    /// 呼び出し MishicefSelector.cs
-    /// </summary>
-    /// <param name="name">デバイス名</param>
-    public void SetDeviceName(string name) { myDevice = name; }
+
+	/// <summary>
+	/// デバイス名を記録
+	/// 呼び出し MishicefSelector.cs
+	/// </summary>
+	/// <param name="name">デバイス名</param>
+	public void SetDeviceName(string name) { myDevice = name; }
 }

@@ -11,16 +11,22 @@ public class Stopwatch_UI : MonoBehaviour
     // 変数宣言------------------------------------------------------------------------
     [SerializeField,Header("針のPrafubを入れてください")] private RectTransform secondHand; //針のPrafub(UIの)
     [SerializeField, Header("半分の時間を入れる時間")] private Text halfTimeLimitText; //制限時間の半分時間のテキストを入れる変数
-    [SerializeField, Header("Maxの時間を入れる時間")] private Text MaxTimeLimitText; //制限時間のMax時間のテキストを入れる変数
+    [SerializeField, Header("Maxの時間を入れる時間")] private Text maxTimeLimitText; //制限時間のMax時間のテキストを入れる変数
+	[SerializeField] private GameObject stopWatchObject; //StopWatchのオブジェクトを保管する
+	[SerializeField] private Image Image; // Rendererコンポーネント
 
     private bool isRunning; //ストップウォッチの実行状態
     private bool isTimeStop; //タイムになる状態をチェック
-    private float startInputStopTime; // 一定時間後に別シーンに移行する処理
-    private float nowSecondsTime; 
+    private float startInputStopTime; // 一定時間後に別シーンに移行するための変数
+    private float nowSecondsTime; // 現在の時間
+	private float quarterSecondsTime; //残り時間が四分の一かどうかを区別する変数
+	private Vector3 initialScale; // 初期サイズ
 
-    //private readonly static float nextSceneStopTime = 3.0f; //次のシーンに移行するまでの待機時間
-    private readonly static string nextResultScene = "ResultScene"; //リザルトシーンに移行する用のstring
-	private static readonly float secondHandRotationAngleValue = 6.0f;
+	//private readonly static float nextSceneStopTime = 3.0f; //次のシーンに移行するまでの待機時間
+	private readonly string nextResultScene = "ResultScene"; //リザルトシーンに移行する用のstring
+	private readonly float maxSize = 1.5f; // 最大サイズ
+	private readonly float minSize = 0.7f; // 最小サイズ
+	private readonly float speed = 2.5f; // 変化スピード
 
 	private bool teacherWin;
     private bool studentWin;
@@ -33,14 +39,17 @@ public class Stopwatch_UI : MonoBehaviour
     {
         //ゲームのスピードを倍化している
         //後で消して
-        //Time.timeScale = 5.0f;
-        isRunning = false;
-        startInputStopTime = 0.0f;
-        nowSecondsTime = 0.0f;
-        isTimeStop = false;
+        Time.timeScale = 5.0f;
+        isRunning = false; 
+        isTimeStop = false; 
+        startInputStopTime = 0.0f; 
+        nowSecondsTime = 0.0f; 
+		quarterSecondsTime = 15.0f; 
+		initialScale = stopWatchObject.transform.localScale; //初期の大きさを保存する
+		Image.material.color = Color.white;
 
-        //ストップウォッチをスタート
-        StartInGameTimer();
+		//ストップウォッチをスタート
+		StartInGameTimer();
         //ストップウォッチの半分の時間を表示
         HalfTimeDisplay();
         MaxTimeDisplay();
@@ -59,7 +68,9 @@ public class Stopwatch_UI : MonoBehaviour
         //勝者雅出る前に時間計算
         if(!teacherWin && !studentWin) UpdateInGameTimerUI();
         StopDeltaTime();
-    }
+		StopWatchUISizeChange();
+		Debug.Log("現在のisRunning：" + $"{isRunning}");
+	}
 
     /// <summary>
     /// ストップウォッチを開始
@@ -91,15 +102,17 @@ public class Stopwatch_UI : MonoBehaviour
         //Debug.Log($"現在時間：{Time_Manager.instance.SendNowTime()}");
         float seconds = Time_Manager.instance.SendNowTime(); //ストップウォッチの経過時間から算出する
         float minites = Time_Manager.instance.SendLimitTime() / 60.0f;
-        float secondsAngle = seconds * secondHandRotationAngleValue / minites; //1秒あたりの角度 (360度 / 60秒)
+        float secondsAngle = seconds * 6.0f / minites; //1秒あたりの角度 (360度 / 60秒)
         nowSecondsTime = seconds;
         //回転処理の呼び出し
         RotateHand(secondHand, secondsAngle);
         //経過時間が0秒を下回ったらフラグを折る
         if(seconds <= 0.0f)
         {
-            isRunning = false;
-        }
+			StopInGameTimer();
+			Image.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+			stopWatchObject.transform.localScale = initialScale;
+		}
     }
 
     /// <summary>
@@ -129,7 +142,7 @@ public class Stopwatch_UI : MonoBehaviour
     private void MaxTimeDisplay()
     {
         //テキストに表示
-        MaxTimeLimitText.text = $"{ Time_Manager.instance.SendLimitTime()}";
+        maxTimeLimitText.text = $"{ Time_Manager.instance.SendLimitTime()}";
     }
 
     /// <summary>
@@ -145,5 +158,28 @@ public class Stopwatch_UI : MonoBehaviour
 	public bool SendTimeStop()
 	{
 		return isTimeStop;
+	}
+
+	/// <summary>
+	/// 制限時間が四分の一を切った時、
+	/// 大きさを変更し続け色を変更する
+	/// </summary>
+	private void StopWatchUISizeChange()
+	{
+		if (nowSecondsTime > quarterSecondsTime) return;
+		if (isRunning == false) return;
+
+		float newSize = Mathf.PingPong(Time.time * speed, maxSize - minSize) + minSize; // PingPong関数で変化させるサイズを計算
+		stopWatchObject.transform.localScale = initialScale * newSize; //サイズの変更
+
+		// 大きくなった時赤くする
+		if (newSize > initialScale.magnitude)
+		{
+			Image.color = new Color(1.0f, 0.5f, 0.5f , 1.0f);
+		}
+		else // 小さくなった時元の色に戻す
+		{
+			Image.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+		}
 	}
 }

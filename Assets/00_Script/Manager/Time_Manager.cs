@@ -16,7 +16,6 @@ public class Time_Manager : Singleton_Class<Time_Manager>
         base.Awake(); // 親クラスのAwakeメソッドを呼び出す
     }
 
-
     void Start()
     {
         //制限時間を設定する

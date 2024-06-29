@@ -63,7 +63,7 @@ public class JudgeUIController : MonoBehaviour, IUI_Interface
         UIObject[2].SetActive(true);
         Color color = UIObject[2].GetComponent<Image>().color;
         color.a = 1.0f;
-
+		UIObject[2].GetComponent<Image>().color = color;
         for(int i = 0; i < UIObject.Length -1; ++i)
 		{
             UIObject[i].SetActive(false);

@@ -22,41 +22,48 @@ public enum NaughtyName
 	origami = 6,
 	game = 7,
 	snackfood = 8,
-
+	Airplane = 9
 };
 
 //AnimNaughtyNumのいたずら番号は現在仮としてマジックナンバーをおいているため、後に修正必須
 public class StudentAnimContoroller : MonoBehaviour
 {
-    string[] naughty = new string[9] { "眠り", "おしゃべり","ダンス" ,  "早弁", "ドミノ", "練り消し", "折り紙", "ゲーム", "菓子"};
-
+	ItemAnimation itemAnimation;
+	//プレイヤーに表示するいたずらの名前を格納
+	string[] naughty = new string[10] { "眠り", "おしゃべり","ダンス" ,  "早弁", "ドミノ", "練り消し", "折り紙", "ゲーム", "菓子" ,"紙飛行機"};
+	//いたずらの番号を決める
     NaughtyName naughtyNum;
-    
     //アニメーターを入れる変数
-    [SerializeField] private Animator animator;
+     Animator animator;
     //パラメータ名を入れる変数
-    string NaughtyNum = "NaughtyNum", Naughty = "DoNaughty", Deceive = "Deceive", PickUp = "PickUp",Normal = "Normal",ReadAloud = "ReadAloud";
+    string NaughtyNum = "NaughtyNum", Naughty = "DoNaughty", PickUp = "PickUp",Normal = "Normal",ReadAloud = "ReadAloud";
 
     // Start is called before the first frame update
     void Start()
     {
+		itemAnimation = GetComponent<ItemAnimation>();
+		//初期化
         naughtyNum = NaughtyName.None;
-        //現在アタッチされているオブジェクトのアニメーターを入れる
-        //animator = this.GetComponent<Animator>();
+		//現在アタッチされているオブジェクトのアニメーターを入れる
+		animator = GetComponentInChildren<Animator>();
         //パラメータを初期化
         //ここの第２引数を変えるとアニメーション勝手に動き出すので変えない
         //------------------------------------------
         animator.SetInteger(NaughtyNum,-1);
         animator.SetBool(Naughty, false);
-        animator.SetBool(Deceive, false);
         //------------------------------------------
     }
 
     // Update is called once per frame
     void Update()
     {
-        //通常時の動きを入れる
-        AnimNomalMove();
+		//もしいたずらの最中でなければ
+		if(animator.GetBool(Naughty) == false)
+		{
+			//通常時の動きを入れる
+			AnimNomalMove();
+		}
+
     }
     /// <summary>
     /// アニメーションパラメータ"NaughtyNum"の番号を切り替える関数
@@ -68,7 +75,7 @@ public class StudentAnimContoroller : MonoBehaviour
     public void AnimNaughtyNum(string NaughtyName)
     {
         //実行しているいたずらの名前がstring型の配列の値にあたるまでループ
-        for(int i = 0;i < 9;++i)
+        for(int i = 0;i < 10;++i)
         {
             //同じ名前があったとき
             if(NaughtyName == naughty[i])
@@ -79,8 +86,13 @@ public class StudentAnimContoroller : MonoBehaviour
 }
         //番号を設定
         animator.SetInteger(NaughtyNum, (int)naughtyNum);
-        //いたずら実行を呼び出す
-        AnimDoNaughty();
+		//アイテムのスクリプトに呼び出す小物を決める
+		itemAnimation.getNaughtyIndex((int)naughtyNum);
+		//いたずら実行を呼び出す
+		AnimDoNaughty();
+		//指定のアイテムの表示をオンにする
+		itemAnimation.ItemActivetrue();
+		//これで現在のアニメーションステートの名前があってる確認がとれる
     }
 
     /// <summary>
@@ -93,8 +105,9 @@ public class StudentAnimContoroller : MonoBehaviour
         bool DoNaughty = animator.GetBool(Naughty);
         //いたずらしていないときは返す
         if (!DoNaughty) return;
-        //指摘されたトリガーを入れる
-        animator.SetTrigger(PickUp);
+		//指摘されたトリガーを入れる
+		//AnimEndNaughty();
+		animator.SetTrigger(PickUp);
     }
     /// <summary>
     /// アニメーションパラメータ"DoNaughty"の値をtrueにする関数
@@ -122,28 +135,8 @@ public class StudentAnimContoroller : MonoBehaviour
         if (!flag) return;
         //いたずらをやめる
         animator.SetBool(Naughty, false);
-    }
-    /// <summary>
-    /// アニメーションパラメータ"Deceive"の値をtrueにする関数
-    /// </summary>
-    /// ごまかし完了時
-    public void AnimDeceive()
-    {
-        //条件用変数：いたずら中かをとる
-        bool DoNaughty = animator.GetBool(Naughty);
-        //いたずら中でないときは返す
-        if (!DoNaughty) return;
-        //ごまかし中かをいれる変数
-        bool flag = animator.GetBool(Deceive);
-        //ごまかしを完了していないとき　且つ　ごまかしが成功している
-        if (!flag)
-        {
-            //ごまかしをオンにする
-            animator.SetBool(Deceive, true);
-            //いたずらをオフにする
-            animator.SetBool(Naughty, false);
-        }
-    }
+		GetComponent<ItemAnimation>().ItemActivefalse();
+	}
     /// <summary>
     /// 通常時にアニメーションをランダムで動かすアニメーション
     /// </summary>
@@ -151,9 +144,8 @@ public class StudentAnimContoroller : MonoBehaviour
     {
         //条件用変数
         bool naughty = animator.GetBool(Naughty);           //いたずら中か
-        bool deceive = animator.GetBool(Deceive);           //ごまかし中か
-        //いたずら もしくは　ごまかし　をしているときは返す
-        if ((naughty) || (deceive)) return;
+        //いたずらをしているときは返す
+        if (naughty) return;
 
         //変数宣言
         //---------------------------------------------------------------------------------------------
@@ -178,7 +170,7 @@ public class StudentAnimContoroller : MonoBehaviour
         if (randomIndex >= 9.0f && !doAnimation)
         {
             //行うアニメーションの番号を入れる
-            Debug.Log($"{normalMoveIndex}");
+            //Debug.Log("通常時生徒のアニメーション番号" + $"{normalMoveIndex}");
             animator.SetInteger(Normal, normalMoveIndex);
             //次回用にランダムで値をとる
             normalMoveIndex = Random.Range(0, moveCount);
@@ -201,8 +193,9 @@ public class StudentAnimContoroller : MonoBehaviour
 	/// <summary>
 	/// アニメーションパラメータ"ReadAloud"をtrueにする関数
 	/// </summary>
-	private void AnimStartReadAloud()
+	public void AnimStartReadAloud()
 	{
+		Debug.Log("Playerの音読処理開始");
 		//現在の"ReadAloud"の状態をとる
 		bool flag = animator.GetBool(ReadAloud);
 		//すでにお音読をしている時は返す
@@ -213,7 +206,7 @@ public class StudentAnimContoroller : MonoBehaviour
 	/// <summary>
 	/// アニメーションパラメータ"ReadAloud"をfalseにする関数
 	/// </summary>
-	private void AnimEndReadAloud()
+	public void AnimEndReadAloud()
 	{
 		//現在の"ReadAloud"の状態をとる
 		bool flag = animator.GetBool(ReadAloud);
@@ -221,5 +214,9 @@ public class StudentAnimContoroller : MonoBehaviour
 		if (!flag) return;
 		//パラメータをfalseにする
 		animator.SetBool(ReadAloud, false);
+	}
+	public Animator getAnimator()
+	{
+		return animator;
 	}
 }

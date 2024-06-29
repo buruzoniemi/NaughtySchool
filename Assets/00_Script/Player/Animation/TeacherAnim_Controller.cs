@@ -67,17 +67,13 @@ public class TeacherAnim_Controller : MonoBehaviour
     /// 指摘をしていないときのみ実行
     public void AnimUsePoint()
     {
-		
-        //現在の"Point"の値をとる
-        bool flag = animator.GetBool(Point);
-		Debug.Log("通ってる" + $"{flag}");
 		//条件用変数：生徒側を見てるかのアニメーションパラメータをとる
 		bool lookUp = animator.GetBool(LookUp);
         //生徒を見ていない、もしくは指摘を既にしているときは返す
-        if ((!lookUp) || (flag)) return;
+        if (!lookUp) return;
         //指摘を開始する
-        animator.SetBool(Point, true);
-    }
+		animator.SetTrigger(Point);
+	}
 
     /// <summary>
     /// アニメーションパラメータの"Hit"の値をtrueにする関数
@@ -86,14 +82,9 @@ public class TeacherAnim_Controller : MonoBehaviour
     /// 
     public void AnimHit(bool PointHit)
     {
-        //条件用変数：指摘を押したかのパラメータをとる
-        bool point = animator.GetBool(Point);
-        //指摘が押されていないときは返す
-        if (!point) return;
-        //"Hit"をtrueにする
+		//PointHitはいたずらの成功判定を入れる
+        //"Hit"をPointHitにする
         animator.SetBool(Hit, PointHit);
-        //指摘を行ったのでパラメータをfalseにしておく
-        animator.SetBool(Point, false); 
     }
 
     /// <summary>

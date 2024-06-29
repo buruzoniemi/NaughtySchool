@@ -11,14 +11,10 @@ public class RotateText : UIBehaviour, IMeshModifier
 {
     private Text textComponent;
     private char[] characters;
-	
-	private static readonly int verticesNumber = 6;
-	private static readonly int verticesHalfNumber = 3;
-	private static readonly float vectorIntermediateValue = 0.5f;
 
-	// 回転させない文字群
-	// XXX 別の設定ファイルなりcsvにまとめて最初に読み込んでしまうのが良さそう
-	private List<char> nonrotatableCharacters;
+    // 回転させない文字群
+    // XXX 別の設定ファイルなりcsvにまとめて最初に読み込んでしまうのが良さそう
+    private List<char> nonrotatableCharacters;
 
     /// <summary>
     /// スクリプトがアクティブになったときに実行される初期化処理
@@ -76,16 +72,16 @@ public class RotateText : UIBehaviour, IMeshModifier
             return;
         }
 
-        for (int i = 0, vertexListCount = vertexList.Count; i < vertexListCount; i += verticesNumber)
+        for (int i = 0, vertexListCount = vertexList.Count; i < vertexListCount; i += 6)
         {
-            int index = i / verticesNumber;
+            int index = i / 6;
             if (IsNonrotatableCharactor(characters[index]))
             {
                 continue;
             }
 
-            var center = Vector2.Lerp(vertexList[i].position, vertexList[i + verticesHalfNumber].position, vectorIntermediateValue);
-            for (int r = 0; r < verticesNumber; r++)
+            var center = Vector2.Lerp(vertexList[i].position, vertexList[i + 3].position, 0.5f);
+            for (int r = 0; r < 6; r++)
             {
                 var element = vertexList[i + r];
                 var pos = element.position - (Vector3)center;

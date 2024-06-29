@@ -283,7 +283,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   secondHand: {fileID: 4863983738940714085}
   halfTimeLimitText: {fileID: 4863983738790036389}
-  MaxTimeLimitText: {fileID: 4638366204608848722}
+  maxTimeLimitText: {fileID: 0}
+  stopWatchObject: {fileID: 0}
+  Image: {fileID: 0}
 --- !u!1 &4863983739062082219
 GameObject:
   m_ObjectHideFlags: 0
