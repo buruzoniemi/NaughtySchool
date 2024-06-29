@@ -1,0 +1,10 @@
+﻿いたずら名,コマンド数,コマンド1,コマンド2,コマンド3,コマンド4,コマンド5,コマンド6,コマンド7,コマンド8,コマンド9
+早弁,4,buttonEast,buttonWest,buttonWest,buttonEast,,,,,
+折り紙,3,buttonNorth,buttonNorth,buttonNorth,,,,,,
+眠り,3,buttonNorth,buttonWest,buttonEast,,,,,,
+おしゃべり,4,buttonEast,dpad/down,buttonNorth,dpad/up,,,,,
+練り消し,2,dpad/left,dpad/right,,,,,,,
+ゲーム,6,dpad/up,dpad/down,dpad/left,dpad/right,dpad/left,dpad/left,,,
+ドミノ,4,buttonEast,dpad/right,dpad/up,buttonNorth,,,,,
+菓子,9,dpad/down,buttonWest,dpad/right,buttonNorth,dpad/up,buttonEast,buttonNorth,buttonWest,dpad/down
+ダンス,3,dpad/up,dpad/right,dpad/left,,,,,,
